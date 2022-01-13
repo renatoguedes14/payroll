@@ -25,7 +25,7 @@ public class TransactionService {
 		Company company = companyOptional.orElseThrow(() -> new ObjectNotFoundException("Company not found. "));
 		company.setBalance(companyOptional.get().getBalance());
 
-		if (amount.compareTo(BigDecimal.ZERO) == 1 && amount.compareTo(company.getBalance()) <= 0) {
+		if (amount.compareTo(BigDecimal.ZERO) > 0 && amount.compareTo(company.getBalance()) <= 0) {
 			company.setBalance(company.getBalance().subtract(amount));
 			return company;
 		}
@@ -37,7 +37,7 @@ public class TransactionService {
 		Employee employee = employeeOptional.orElseThrow(() -> new ObjectNotFoundException("Employee not found. "));
 		employee.setBalance(employeeOptional.get().getBalance());
 
-		if (amount.compareTo(BigDecimal.ZERO) == 1) {
+		if (amount.compareTo(BigDecimal.ZERO) > 0) {
 			employee.setBalance(employee.getBalance().add(amount));
 			return employee;
 		}

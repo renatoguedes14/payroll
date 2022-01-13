@@ -44,7 +44,7 @@ public class CompanyResource {
 	@ApiOperation(value = "Searches all companies in database. ", response = CompanyDTO.class, responseContainer = "List")
 	@GetMapping
 	public ResponseEntity<List<CompanyDTO>> findAll() {
-		List<CompanyDTO> companyDTOList = companyService.findAllCompanies().stream().map(obj -> new CompanyDTO(obj))
+		List<CompanyDTO> companyDTOList = companyService.findAllCompanies().stream().map(CompanyDTO::new)
 				.collect(Collectors.toList());
 
 		return ResponseEntity.ok().body(companyDTOList);
