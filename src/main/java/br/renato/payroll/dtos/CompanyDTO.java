@@ -14,13 +14,11 @@ public class CompanyDTO {
 	private String name;
 	private String cnpj;
 	private String address;
-	private BigDecimal balance;
 
 	public CompanyDTO(final Company company) {
 		this.id = company.getId();
 		this.name = company.getName();
 		this.cnpj = company.getCnpj();
 		this.address = company.getAddress();
-		this.balance = company.getBalance();
 	}
 }

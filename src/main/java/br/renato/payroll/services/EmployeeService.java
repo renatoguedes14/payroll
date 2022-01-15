@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class EmployeeService {
 		}
 
 		return employeeRepository.save(new Employee(employeeDTO.getName(), employeeDTO.getCpf(), employeeDTO.getAddress(),
-				employeeDTO.getSalary(), employeeDTO.getBalance(), company.get()));
+				employeeDTO.getSalary(), company.get()));
 	}
 
 	public Employee update(final Long id, @Valid EmployeeDTO employeeDTO) {
@@ -63,7 +64,7 @@ public class EmployeeService {
 		employee.setName(employeeDTO.getName());
 		employee.setCpf(employeeDTO.getCpf());
 		employee.setAddress(employeeDTO.getAddress());
-		employee.setBalance(employeeDTO.getBalance());
+		employee.setSalary(employeeDTO.getSalary());
 		employee.setCompany(company.get());
 
 		return employeeRepository.save(employee);
@@ -74,10 +75,20 @@ public class EmployeeService {
 		employeeRepository.delete(employee);
 	}
 
-	public Employee checkBalance(final Long id) {
-		Optional<Employee> employeeOptional = employeeRepository.findById(id);
+	public List<EmployeeDTO> getIdAndSalaryByCompanyId(Long companyId) {
+		List<Employee> employeeList = employeeRepository.findByCompanyId(companyId);
+		List<EmployeeDTO> employeeDTOList = new ArrayList<>();
 
-		return employeeOptional.orElseThrow(() -> new ObjectNotFoundException("Employee not found. "));
+		if (employeeList == null || employeeList.isEmpty()) {
+			throw new ObjectNotFoundException("Employee not found. ");
+		}
+		for (Employee employee : employeeList) {
+			if (employee.getSalary() != null) {
+				employeeDTOList.add(new EmployeeDTO(employee.getId(), employee.getSalary()));
+			}
+		}
+
+		return employeeDTOList;
 	}
 
 	private Employee findByCpf(final EmployeeDTO employeeDTO) {

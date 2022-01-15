@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
@@ -20,9 +19,7 @@ import java.math.BigDecimal;
 @Table(name = "employees")
 @Getter
 @Setter
-public class Employee implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,17 +29,15 @@ public class Employee implements Serializable {
 	private String cpf;
 	private String address;
 	private BigDecimal salary;
-	private BigDecimal balance;
 	@ManyToOne
 	@JoinColumn(name = "company", referencedColumnName = "id")
 	private Company company;
 
-	public Employee(String name, String cpf, String address, BigDecimal salary, BigDecimal balance, Company company) {
+	public Employee(String name, String cpf, String address, BigDecimal salary, Company company) {
 		this.name = name;
 		this.cpf = cpf;
 		this.address = address;
 		this.salary = salary;
-		this.balance = balance;
 		this.company = company;
 	}
 }

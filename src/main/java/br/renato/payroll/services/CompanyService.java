@@ -1,18 +1,18 @@
 package br.renato.payroll.services;
 
+import br.renato.payroll.dtos.BankAccountDTO;
 import br.renato.payroll.dtos.CompanyDTO;
-import br.renato.payroll.dtos.TransactionDTO;
+import br.renato.payroll.dtos.EmployeeDTO;
 import br.renato.payroll.entities.Company;
-import br.renato.payroll.entities.Employee;
 import br.renato.payroll.exceptions.DataIntegrityViolationException;
 import br.renato.payroll.exceptions.ObjectNotFoundException;
 import br.renato.payroll.repositories.CompanyRepository;
-import br.renato.payroll.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,8 +23,11 @@ import java.util.Optional;
 public class CompanyService {
 
 	private final CompanyRepository companyRepository;
-	private final EmployeeRepository employeeRepository;
-	private final TransactionService transactionService;
+
+	private final BankAccountService bankAccountService;
+	private final EmployeeService employeeService;
+
+	private static final BigDecimal payrollFee = BigDecimal.valueOf(0.0038);
 
 	public Company findCompany(final Long id) {
 		Optional<Company> company = companyRepository.findById(id);
@@ -41,8 +44,7 @@ public class CompanyService {
 		if (findByCnpj(companyDTO) != null) {
 			throw new DataIntegrityViolationException("Company already registered in database. ");
 		}
-		return companyRepository.save(new Company(companyDTO.getName(), companyDTO.getCnpj(), companyDTO.getAddress(),
-				companyDTO.getBalance()));
+		return companyRepository.save(new Company(companyDTO.getName(), companyDTO.getCnpj(), companyDTO.getAddress()));
 	}
 
 	public Company updateCompany(final Long id, @Valid final CompanyDTO companyDTO) {
@@ -54,7 +56,6 @@ public class CompanyService {
 		company.setName(companyDTO.getName());
 		company.setCnpj(companyDTO.getCnpj());
 		company.setAddress(companyDTO.getAddress());
-		company.setBalance(companyDTO.getBalance());
 		return companyRepository.save(company);
 	}
 
@@ -67,40 +68,40 @@ public class CompanyService {
 		companyRepository.delete(company);
 	}
 
-	public Company checkBalance(final Long id) {
-		Optional<Company> companyOptional = companyRepository.findById(id);
-		if (companyOptional.isPresent()) {
-			return companyOptional.get();
+	@Transactional
+	public void pay(Long companyId) {
+		List<EmployeeDTO> employeeDTOList = employeeService.getIdAndSalaryByCompanyId(companyId);
+		BankAccountDTO bankAccountDTO = bankAccountService.getCompanyAccountBalance(companyId);
+		BigDecimal feeAmount;
+
+		if (checkAvailableBalance(bankAccountDTO.getBalance(), employeeDTOList)) {
+			throw new DataIntegrityViolationException("Insufficient balance to pay all employees. ");
 		}
-		throw new ObjectNotFoundException("Company not found. ");
+		for (EmployeeDTO employeeDTO : employeeDTOList) {
+			bankAccountService.withdrawalCompanyBankAccount(companyId, employeeDTO.getSalary());
+			try {
+				bankAccountService.depositEmployeeBankAccount(employeeDTO.getId(), employeeDTO.getSalary());
+			} catch (Exception e) {
+				bankAccountService.depositCompanyBankAccount(companyId, employeeDTO.getSalary());
+				throw new DataIntegrityViolationException(e.getMessage());
+			}
+			feeAmount = employeeDTO.getSalary().multiply(payrollFee);
+			bankAccountService.withdrawalCompanyBankAccount(companyId, feeAmount);
+		}
+
 	}
 
-	public void transfer(final TransactionDTO transactionDTO) {
-		Optional<Company> companyOptional = companyRepository.findById(transactionDTO.getCompanyId());
-		Optional<Employee> employeeOptional = employeeRepository.getByCpf(transactionDTO.getCpf());
-
-		if (companyOptional.isEmpty()) {
-			throw new ObjectNotFoundException("Company not found. ");
+	private boolean checkAvailableBalance(BigDecimal balance, List<EmployeeDTO> employeeDTOList) {
+		BigDecimal payrollAmount = BigDecimal.ZERO;
+		BigDecimal feeAmount;
+		for (EmployeeDTO employeeDTO : employeeDTOList) {
+			payrollAmount = payrollAmount.add(employeeDTO.getSalary());
 		}
+		feeAmount = payrollAmount.multiply(payrollFee);
+		payrollAmount = payrollAmount.add(feeAmount);
 
-		if (employeeOptional.isEmpty()) {
-			throw new ObjectNotFoundException("Employee not found. ");
-		}
-
-		Company company = companyOptional.get();
-		Employee employee = employeeOptional.get();
-
-		if (transactionDTO.getAmount().compareTo(company.getBalance()) > 0) {
-			throw new DataIntegrityViolationException("Insufficient balance");
-		}
-
-		transactionService.withdrawal(company.getId(), transactionDTO.getAmount());
-		transactionService.deposit(employee.getId(), transactionDTO.getAmount());
-
-		companyRepository.save(company);
-		employeeRepository.save(employee);
+		return balance.compareTo(payrollAmount) < 0;
 	}
-
 
 	private Company findByCnpj(final CompanyDTO companyDTO) {
 		return companyRepository.findByCnpj(companyDTO.getCnpj());
