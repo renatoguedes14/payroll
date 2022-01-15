@@ -5,8 +5,8 @@ import br.renato.payroll.entities.Company;
 import br.renato.payroll.entities.Employee;
 import br.renato.payroll.exceptions.DataIntegrityViolationException;
 import br.renato.payroll.exceptions.ObjectNotFoundException;
-import br.renato.payroll.repository.CompanyRepository;
-import br.renato.payroll.repository.EmployeeRepository;
+import br.renato.payroll.repositories.CompanyRepository;
+import br.renato.payroll.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
