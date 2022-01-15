@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-	boolean existsByCpf(String cpf);
-
 	@Query("SELECT obj FROM Employee obj WHERE obj.cpf =:cpf")
 	Employee findByCpf(@Param("cpf") String cpf);
 

@@ -20,27 +20,23 @@ public class TransactionService {
 	private final CompanyRepository companyRepository;
 	private final EmployeeRepository employeeRepository;
 
-	public Company withdrawal(final Long id, final BigDecimal amount) {
+	public void withdrawal(final Long id, final BigDecimal amount) {
 		Optional<Company> companyOptional = companyRepository.findById(id);
 		Company company = companyOptional.orElseThrow(() -> new ObjectNotFoundException("Company not found. "));
 		company.setBalance(companyOptional.get().getBalance());
 
 		if (amount.compareTo(BigDecimal.ZERO) > 0 && amount.compareTo(company.getBalance()) <= 0) {
 			company.setBalance(company.getBalance().subtract(amount));
-			return company;
 		}
-		return null;
 	}
 
-	public Employee deposit(final Long id, final BigDecimal amount) {
+	public void deposit(final Long id, final BigDecimal amount) {
 		Optional<Employee> employeeOptional = employeeRepository.findById(id);
 		Employee employee = employeeOptional.orElseThrow(() -> new ObjectNotFoundException("Employee not found. "));
 		employee.setBalance(employeeOptional.get().getBalance());
 
 		if (amount.compareTo(BigDecimal.ZERO) > 0) {
 			employee.setBalance(employee.getBalance().add(amount));
-			return employee;
 		}
-		return null;
 	}
 }

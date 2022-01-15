@@ -14,11 +14,4 @@ public class ValidationError extends ErrorDTO {
 
 	private final List<FieldMessage> errorList = new ArrayList<>();
 
-	public ValidationError(Long timestamp, Integer status, String error) {
-		super(timestamp, status, error);
-	}
-
-	public void addError(String fieldName, String message) {
-		this.errorList.add(new FieldMessage(fieldName, message));
-	}
 }

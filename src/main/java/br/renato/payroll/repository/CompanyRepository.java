@@ -7,8 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
-	boolean existsByCnpj(String cnpj);
-
 	@Query("SELECT obj FROM Company obj WHERE obj.cnpj =:cnpj")
 	Company findByCnpj(@Param("cnpj") String cnpj);
 }
