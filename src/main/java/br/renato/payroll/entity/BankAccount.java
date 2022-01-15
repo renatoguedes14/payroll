@@ -1,4 +1,4 @@
-package br.renato.payroll.entities;
+package br.renato.payroll.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

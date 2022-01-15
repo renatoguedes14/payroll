@@ -1,6 +1,6 @@
-package br.renato.payroll.repositories;
+package br.renato.payroll.repository;
 
-import br.renato.payroll.entities.BankAccount;
+import br.renato.payroll.entity.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

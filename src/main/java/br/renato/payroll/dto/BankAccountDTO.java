@@ -1,6 +1,6 @@
-package br.renato.payroll.dtos;
+package br.renato.payroll.dto;
 
-import br.renato.payroll.entities.BankAccount;
+import br.renato.payroll.entity.BankAccount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

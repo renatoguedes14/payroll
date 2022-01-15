@@ -1,14 +1,14 @@
-package br.renato.payroll.services;
+package br.renato.payroll.service;
 
-import br.renato.payroll.dtos.BankAccountDTO;
-import br.renato.payroll.entities.BankAccount;
-import br.renato.payroll.entities.Company;
-import br.renato.payroll.entities.Employee;
-import br.renato.payroll.exceptions.DataIntegrityViolationException;
-import br.renato.payroll.exceptions.ObjectNotFoundException;
-import br.renato.payroll.repositories.BankAccountRepository;
-import br.renato.payroll.repositories.CompanyRepository;
-import br.renato.payroll.repositories.EmployeeRepository;
+import br.renato.payroll.dto.BankAccountDTO;
+import br.renato.payroll.entity.BankAccount;
+import br.renato.payroll.entity.Company;
+import br.renato.payroll.entity.Employee;
+import br.renato.payroll.exception.DataIntegrityViolationException;
+import br.renato.payroll.exception.ObjectNotFoundException;
+import br.renato.payroll.repository.BankAccountRepository;
+import br.renato.payroll.repository.CompanyRepository;
+import br.renato.payroll.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
-package br.renato.payroll.resources;
+package br.renato.payroll.resource;
 
-import br.renato.payroll.dtos.BankAccountDTO;
-import br.renato.payroll.entities.BankAccount;
-import br.renato.payroll.services.BankAccountService;
+import br.renato.payroll.dto.BankAccountDTO;
+import br.renato.payroll.entity.BankAccount;
+import br.renato.payroll.service.BankAccountService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
