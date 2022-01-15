@@ -15,6 +15,7 @@ public class EmployeeDTO {
 	private String cpf;
 	private String address;
 	private Long companyId;
+	private BigDecimal salary;
 	private BigDecimal balance;
 
 	public EmployeeDTO(final Employee employee) {
@@ -23,6 +24,7 @@ public class EmployeeDTO {
 		this.cpf = employee.getCpf();
 		this.address = employee.getAddress();
 		this.companyId = employee.getCompany().getId();
+		this.salary = employee.getSalary();
 		this.balance = employee.getBalance();
 	}
 }

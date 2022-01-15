@@ -45,7 +45,7 @@ public class EmployeeService {
 		}
 
 		return employeeRepository.save(new Employee(employeeDTO.getName(), employeeDTO.getCpf(), employeeDTO.getAddress(),
-				employeeDTO.getBalance(), company.get()));
+				employeeDTO.getSalary(), employeeDTO.getBalance(), company.get()));
 	}
 
 	public Employee update(final Long id, @Valid EmployeeDTO employeeDTO) {

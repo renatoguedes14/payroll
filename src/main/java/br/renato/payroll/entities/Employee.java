@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springfox.documentation.swagger2.mappers.CompatibilityModelMapper;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,20 +28,20 @@ public class Employee implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Setter(AccessLevel.NONE)
 	private Long id;
-
 	private String name;
 	private String cpf;
 	private String address;
+	private BigDecimal salary;
 	private BigDecimal balance;
-
 	@ManyToOne
 	@JoinColumn(name = "company", referencedColumnName = "id")
 	private Company company;
 
-	public Employee(String name, String cpf, String address, BigDecimal balance, Company company) {
+	public Employee(String name, String cpf, String address, BigDecimal salary, BigDecimal balance, Company company) {
 		this.name = name;
 		this.cpf = cpf;
 		this.address = address;
+		this.salary = salary;
 		this.balance = balance;
 		this.company = company;
 	}
