@@ -13,8 +13,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class SpringFoxConfig {
 
-	public static final String COMPANY_API_DESCRIPTION_TAG = "Create, find, update, remove, balance check and transfers operations. ";
-
 	@Bean
 	public Docket swagger() {
 		return new Docket(DocumentationType.SWAGGER_2)

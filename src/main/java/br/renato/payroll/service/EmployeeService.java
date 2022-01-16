@@ -31,6 +31,10 @@ public class EmployeeService {
 		return employee.orElseThrow(() -> new ObjectNotFoundException("Employee not found. "));
 	}
 
+	public Employee findEmployeeByCpf(final String cpf) {
+		return employeeRepository.findByCpf(cpf);
+	}
+
 	public List<Employee> findAll() {
 		return employeeRepository.findAll();
 	}
@@ -49,7 +53,7 @@ public class EmployeeService {
 				employeeDTO.getSalary(), company.get()));
 	}
 
-	public Employee update(final Long id, @Valid EmployeeDTO employeeDTO) {
+	public Employee update(final Long id, @Valid final EmployeeDTO employeeDTO) {
 		Employee employee = findEmployee(id);
 
 		if (findByCpf(employeeDTO) != null && !Objects.equals(findByCpf(employeeDTO).getId(), id)) {
@@ -75,7 +79,7 @@ public class EmployeeService {
 		employeeRepository.delete(employee);
 	}
 
-	public List<EmployeeDTO> getIdAndSalaryByCompanyId(Long companyId) {
+	public List<EmployeeDTO> getIdAndSalaryByCompanyId(final Long companyId) {
 		List<Employee> employeeList = employeeRepository.findByCompanyId(companyId);
 		List<EmployeeDTO> employeeDTOList = new ArrayList<>();
 
@@ -84,7 +88,7 @@ public class EmployeeService {
 		}
 		for (Employee employee : employeeList) {
 			if (employee.getSalary() != null) {
-				employeeDTOList.add(new EmployeeDTO(employee.getId(), employee.getSalary()));
+				employeeDTOList.add(new EmployeeDTO(employee.getId(), employee.getName(), employee.getSalary()));
 			}
 		}
 

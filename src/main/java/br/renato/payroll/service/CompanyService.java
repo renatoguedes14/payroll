@@ -2,6 +2,7 @@ package br.renato.payroll.service;
 
 import br.renato.payroll.dto.BankAccountDTO;
 import br.renato.payroll.dto.CompanyDTO;
+import br.renato.payroll.dto.EmailDTO;
 import br.renato.payroll.dto.EmployeeDTO;
 import br.renato.payroll.entity.Company;
 import br.renato.payroll.exception.DataIntegrityViolationException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,8 +28,13 @@ public class CompanyService {
 
 	private final BankAccountService bankAccountService;
 	private final EmployeeService employeeService;
+	private final RabbitMQSender sender;
 
 	private static final BigDecimal payrollFee = BigDecimal.valueOf(0.0038);
+	private static final String ownerRef = "Payroll System";
+	private static final String emailFrom = "renato.guedes14@gmail.com";
+	private static final String emailTo = "renato.guedes@somapay.com.br";
+	private static final String subject = "Payroll of company paid. ";
 
 	public Company findCompany(final Long id) {
 		Optional<Company> company = companyRepository.findById(id);
@@ -44,6 +51,7 @@ public class CompanyService {
 		if (findByCnpj(companyDTO) != null) {
 			throw new DataIntegrityViolationException("Company already registered in database. ");
 		}
+
 		return companyRepository.save(new Company(companyDTO.getName(), companyDTO.getCnpj(), companyDTO.getAddress()));
 	}
 
@@ -56,6 +64,7 @@ public class CompanyService {
 		company.setName(companyDTO.getName());
 		company.setCnpj(companyDTO.getCnpj());
 		company.setAddress(companyDTO.getAddress());
+
 		return companyRepository.save(company);
 	}
 
@@ -69,29 +78,96 @@ public class CompanyService {
 	}
 
 	@Transactional
-	public void pay(Long companyId) {
+	public void pay(final Long companyId) {
+
+		Optional<Company> company = companyRepository.findById(companyId);
+
+		if (company.isEmpty()) {
+			throw new ObjectNotFoundException("Company not found. ");
+		}
 		List<EmployeeDTO> employeeDTOList = employeeService.getIdAndSalaryByCompanyId(companyId);
 		BankAccountDTO bankAccountDTO = bankAccountService.getCompanyAccountBalance(companyId);
-		BigDecimal feeAmount;
+		BigDecimal amountPaid = BigDecimal.ZERO;
+		BigDecimal feeAmount = BigDecimal.ZERO;
 
 		if (checkAvailableBalance(bankAccountDTO.getBalance(), employeeDTOList)) {
 			throw new DataIntegrityViolationException("Insufficient balance to pay all employees. ");
 		}
 		for (EmployeeDTO employeeDTO : employeeDTOList) {
-			bankAccountService.withdrawalCompanyBankAccount(companyId, employeeDTO.getSalary());
+			bankAccountService.withdrawalCompanyBankAccount(companyId, employeeDTO.getSalary()
+					.add(employeeDTO.getSalary().multiply(payrollFee)));
+			amountPaid = amountPaid.add(employeeDTO.getSalary());
+			feeAmount = feeAmount.add(employeeDTO.getSalary().multiply(payrollFee));
+
 			try {
 				bankAccountService.depositEmployeeBankAccount(employeeDTO.getId(), employeeDTO.getSalary());
 			} catch (Exception e) {
-				bankAccountService.depositCompanyBankAccount(companyId, employeeDTO.getSalary());
+				bankAccountService.depositCompanyBankAccount(companyId, employeeDTO.getSalary()
+						.add(employeeDTO.getSalary().multiply(payrollFee)));
 				throw new DataIntegrityViolationException(e.getMessage());
 			}
-			feeAmount = employeeDTO.getSalary().multiply(payrollFee);
-			bankAccountService.withdrawalCompanyBankAccount(companyId, feeAmount);
 		}
-
+		sendEmail(company, employeeDTOList, amountPaid, feeAmount);
 	}
 
-	private boolean checkAvailableBalance(BigDecimal balance, List<EmployeeDTO> employeeDTOList) {
+	private void sendEmail(final Optional<Company> company, final List<EmployeeDTO> paidEmployees,
+	                       final BigDecimal amountPaid, final BigDecimal feeAmount) {
+		BigDecimal totalPaid = amountPaid.add(feeAmount);
+
+		if (company.isPresent()) {
+			EmailDTO emailDTO = new EmailDTO();
+			emailDTO.setOwnerRef(ownerRef);
+			emailDTO.setEmailFrom(emailFrom);
+			emailDTO.setEmailTo(emailTo);
+			emailDTO.setSubject(subject);
+			emailDTO.setEmployees(new ArrayList<>());
+			for (EmployeeDTO employeeDTO : paidEmployees) {
+				emailDTO.getEmployees().add(employeeDTO.getName());
+			}
+			emailDTO.setText("Payroll of company " + company.get().getName() + " paid. " +
+					"\nPaid employees: " + emailDTO.getEmployees().toString() +
+					"\nAmount paid: R$" + amountPaid +
+					"\nFees: R$" + feeAmount +
+					"\nTotal paid: R$" + totalPaid);
+			sender.send(emailDTO);
+		}
+	}
+
+	public void paySelectedEmployees(final Long companyId, final List<String> employeeCpf) {
+		List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+		BigDecimal amountPaid = BigDecimal.ZERO;
+		BigDecimal feeAmount = BigDecimal.ZERO;
+		Optional<Company> company = companyRepository.findById(companyId);
+
+		if (company.isEmpty()) {
+			throw new ObjectNotFoundException("Company not found. ");
+		}
+		for (String cpf : employeeCpf) {
+			EmployeeDTO employeeDTO = new EmployeeDTO(employeeService.findEmployeeByCpf(cpf));
+
+			if (!companyId.equals(employeeDTO.getCompanyId())) {
+				throw new DataIntegrityViolationException("This employee does not work in the selected company. ");
+			}
+			bankAccountService.withdrawalCompanyBankAccount(companyId, employeeDTO.getSalary()
+					.add(employeeDTO.getSalary().multiply(payrollFee)));
+
+			amountPaid = amountPaid.add(employeeDTO.getSalary());
+			feeAmount = feeAmount.add(employeeDTO.getSalary().multiply(payrollFee));
+			employeeDTOList.add(employeeDTO);
+
+			try {
+				bankAccountService.depositEmployeeBankAccount(employeeDTO.getId(), employeeDTO.getSalary());
+			} catch (Exception e) {
+				bankAccountService.depositCompanyBankAccount(companyId, employeeDTO.getSalary()
+						.add(employeeDTO.getSalary().multiply(payrollFee)));
+
+				throw new DataIntegrityViolationException(e.getMessage());
+			}
+		}
+		sendEmail(company, employeeDTOList, amountPaid, feeAmount);
+	}
+
+	private boolean checkAvailableBalance(final BigDecimal balance, final List<EmployeeDTO> employeeDTOList) {
 		BigDecimal payrollAmount = BigDecimal.ZERO;
 		BigDecimal feeAmount;
 		for (EmployeeDTO employeeDTO : employeeDTOList) {
