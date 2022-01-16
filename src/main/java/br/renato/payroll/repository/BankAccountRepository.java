@@ -12,14 +12,16 @@ import java.math.BigDecimal;
 @Repository
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
 
-	boolean existsByCompanyId(Long companyId);
-	boolean existsByEmployeeId(Long employeeId);
+	boolean existsByCompanyId(final Long companyId);
 
-	BankAccount findByCompanyId(Long companyId);
-	BankAccount findByEmployeeId(Long employeeId);
+	boolean existsByEmployeeId(final Long employeeId);
+
+	BankAccount findByCompanyId(final Long companyId);
+
+	BankAccount findByEmployeeId(final Long employeeId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE BankAccount obj SET obj.balance = :balance WHERE obj.id = :id")
-	void updateBalance(Long id, BigDecimal balance);
+	void updateBalance(final Long id, final BigDecimal balance);
 }

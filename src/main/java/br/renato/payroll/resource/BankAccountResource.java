@@ -29,7 +29,7 @@ public class BankAccountResource {
 
 	@ApiOperation(value = "Allows you to find a bank account by its id. ", response = BankAccountDTO.class)
 	@GetMapping("/{id}")
-	public ResponseEntity<BankAccountDTO> find(@PathVariable Long id) {
+	public ResponseEntity<BankAccountDTO> find(@PathVariable final Long id) {
 		BankAccountDTO bankAccountDTO = new BankAccountDTO(bankAccountService.findBankAccount(id));
 
 		return ResponseEntity.ok().body(bankAccountDTO);
@@ -46,7 +46,7 @@ public class BankAccountResource {
 
 	@ApiOperation(value = "Allows you to check a company bank account's balance. ", response = BankAccountDTO.class)
 	@GetMapping("/company/checkBalance/{companyId}")
-	public ResponseEntity<BankAccountDTO> checkCompanyAccountBalance(@PathVariable Long companyId) {
+	public ResponseEntity<BankAccountDTO> checkCompanyAccountBalance(@PathVariable final Long companyId) {
 		BankAccountDTO bankAccountDTO = bankAccountService.getCompanyAccountBalance(companyId);
 
 		return ResponseEntity.ok().body(bankAccountDTO);
@@ -54,7 +54,7 @@ public class BankAccountResource {
 
 	@ApiOperation(value = "Allows you to check a employee bank account's balance. ", response = BankAccountDTO.class)
 	@GetMapping("/company/checkBalance/{employeeId}")
-	public ResponseEntity<BankAccountDTO> checkEmployeeAccountBalance(@PathVariable Long employeeId) {
+	public ResponseEntity<BankAccountDTO> checkEmployeeAccountBalance(@PathVariable final Long employeeId) {
 		BankAccountDTO bankAccountDTO = bankAccountService.getEmployeeAccountBalance(employeeId);
 
 		return ResponseEntity.ok().body(bankAccountDTO);
@@ -62,7 +62,7 @@ public class BankAccountResource {
 
 	@ApiOperation(value = "Create a new bank account. ")
 	@PostMapping("/create")
-	public ResponseEntity<BankAccountDTO> create(@RequestBody BankAccountDTO bankAccountDTO) {
+	public ResponseEntity<BankAccountDTO> create(@RequestBody final BankAccountDTO bankAccountDTO) {
 		BankAccount bankAccount = bankAccountService.save(bankAccountDTO);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(bankAccount.getId()).toUri();
 

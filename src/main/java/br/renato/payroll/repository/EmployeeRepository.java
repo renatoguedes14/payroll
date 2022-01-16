@@ -10,8 +10,8 @@ import java.util.List;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	@Query("SELECT obj FROM Employee obj WHERE obj.cpf =:cpf")
-	Employee findByCpf(@Param("cpf") String cpf);
+	Employee findByCpf(@Param("cpf") final String cpf);
 
-	List<Employee> findByCompanyId(Long companyId);
+	List<Employee> findByCompanyId(final Long companyId);
 
 }

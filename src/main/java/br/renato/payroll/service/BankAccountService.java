@@ -25,7 +25,7 @@ public class BankAccountService {
 	private final CompanyRepository companyRepository;
 	private final EmployeeRepository employeeRepository;
 
-	public BankAccount findBankAccount(Long id) {
+	public BankAccount findBankAccount(final Long id) {
 		Optional<BankAccount> bankAccount = bankAccountRepository.findById(id);
 		return bankAccount.orElseThrow(() -> new ObjectNotFoundException(
 				"Bank account not found. "));
@@ -35,7 +35,7 @@ public class BankAccountService {
 		return bankAccountRepository.findAll();
 	}
 
-	public BankAccount save(BankAccountDTO bankAccountDTO) {
+	public BankAccount save(final BankAccountDTO bankAccountDTO) {
 		if (bankAccountDTO.getBalance() == null) {
 			bankAccountDTO.setBalance(BigDecimal.ZERO);
 		}
@@ -66,7 +66,7 @@ public class BankAccountService {
 		}
 	}
 
-	public BankAccountDTO getCompanyAccountBalance(Long companyId) {
+	public BankAccountDTO getCompanyAccountBalance(final Long companyId) {
 		BankAccount bankAccount = bankAccountRepository.findByCompanyId(companyId);
 		if (bankAccount == null) {
 			throw new ObjectNotFoundException("Bank account not found. ");
@@ -74,7 +74,7 @@ public class BankAccountService {
 		return new BankAccountDTO(bankAccount.getId(), bankAccount.getBalance());
 	}
 
-	public BankAccountDTO getEmployeeAccountBalance(Long employeeId) {
+	public BankAccountDTO getEmployeeAccountBalance(final Long employeeId) {
 		BankAccount bankAccount = bankAccountRepository.findByEmployeeId(employeeId);
 		if (bankAccount == null) {
 			throw new ObjectNotFoundException("Bank account not found. ");
@@ -83,17 +83,16 @@ public class BankAccountService {
 	}
 
 	@Transactional
-	public void withdrawalCompanyBankAccount(Long companyId, BigDecimal amount) {
+	public void withdrawalCompanyBankAccount(final Long companyId, final BigDecimal amount) {
 		BankAccount bankAccount = bankAccountRepository.findByCompanyId(companyId);
 		BigDecimal balance = bankAccount.getBalance().subtract(amount);
 		bankAccount.setBalance(balance);
 
 		bankAccountRepository.save(bankAccount);
-//		bankAccountRepository.updateBalance(bankAccountDTO.getId(), balance);
 	}
 
 	@Transactional
-	public void depositCompanyBankAccount(Long companyId, BigDecimal amount) {
+	public void depositCompanyBankAccount(final Long companyId, final BigDecimal amount) {
 		BankAccountDTO bankAccountDTO = getCompanyAccountBalance(companyId);
 		BigDecimal balance = bankAccountDTO.getBalance().add(amount);
 
@@ -101,7 +100,7 @@ public class BankAccountService {
 	}
 
 	@Transactional
-	public void depositEmployeeBankAccount(Long employeeId, BigDecimal amount) {
+	public void depositEmployeeBankAccount(final Long employeeId, final BigDecimal amount) {
 		BankAccountDTO bankAccountDTO = getEmployeeAccountBalance(employeeId);
 		BigDecimal balance = bankAccountDTO.getBalance().add(amount);
 

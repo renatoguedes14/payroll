@@ -31,12 +31,12 @@ public class BankAccount {
 	@JoinColumn(name = "employee")
 	private Employee employee;
 
-	public BankAccount(BigDecimal balance, Company company) {
+	public BankAccount(final BigDecimal balance, final Company company) {
 		this.balance = balance;
 		this.company = company;
 	}
 
-	public BankAccount(BigDecimal balance, Employee employee) {
+	public BankAccount(final BigDecimal balance, final Employee employee) {
 		this.balance = balance;
 		this.employee = employee;
 	}

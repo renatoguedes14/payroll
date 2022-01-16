@@ -33,7 +33,7 @@ public class Employee {
 	@JoinColumn(name = "company", referencedColumnName = "id")
 	private Company company;
 
-	public Employee(String name, String cpf, String address, BigDecimal salary, Company company) {
+	public Employee(final String name, final String cpf, final String address, final BigDecimal salary, final Company company) {
 		this.name = name;
 		this.cpf = cpf;
 		this.address = address;

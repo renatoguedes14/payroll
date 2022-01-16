@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param;
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
 	@Query("SELECT obj FROM Company obj WHERE obj.cnpj =:cnpj")
-	Company findByCnpj(@Param("cnpj") String cnpj);
+	Company findByCnpj(@Param("cnpj") final String cnpj);
 }

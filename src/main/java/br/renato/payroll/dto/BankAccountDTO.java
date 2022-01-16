@@ -27,7 +27,7 @@ public class BankAccountDTO {
 		}
 	}
 
-	public BankAccountDTO(Long id, BigDecimal balance) {
+	public BankAccountDTO(final Long id, final BigDecimal balance) {
 		this.id = id;
 		this.balance = balance;
 	}

@@ -35,7 +35,7 @@ public class Company {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
 	private List<Employee> employeeList;
 
-	public Company(String name, String cnpj, String address) {
+	public Company(final String name, final String cnpj, final String address) {
 		this.name = name;
 		this.cnpj = cnpj;
 		this.address = address;

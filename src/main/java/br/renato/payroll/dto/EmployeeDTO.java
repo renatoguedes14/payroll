@@ -26,8 +26,9 @@ public class EmployeeDTO {
 		this.salary = employee.getSalary();
 	}
 
-	public EmployeeDTO(Long id, BigDecimal salary) {
+	public EmployeeDTO(final Long id, final String name, final BigDecimal salary) {
 		this.id = id;
+		this.name = name;
 		this.salary = salary;
 	}
 }
