@@ -10,7 +10,7 @@ Uma vez obtido o retorno da requisição, nos Headers da response, pegar as info
 
 O arquivo application.properties foi fornecido no anexo do e-mail contendo o link para este repositório. Por razões de segurança, removi o arquivo do repositório público.
 
-<b>Tecnologias e bibliotecas utilizadas: </b> Java 11, Spring Boot e Spring Data, PostgreSQL, Project Lombok e Swagger UI
+<b>Tecnologias e bibliotecas utilizadas: </b> Java 11, Spring Boot, Spring Data, Spring Security, JWT, PostgreSQL, Project Lombok, Swagger UI e RabbitMQ.
 
 ## Swagger
 http://localhost:8183/swagger-ui/index.html
