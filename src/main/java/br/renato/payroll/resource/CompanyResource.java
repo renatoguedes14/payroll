@@ -85,16 +85,4 @@ public class CompanyResource {
 		}
 		return ResponseEntity.noContent().build();
 	}
-
-	@ApiOperation(value = "Allows you to pay selected employees by their CPFs. ")
-	@PutMapping("/payroll/pay/selected/{id}")
-	@Transactional
-	public ResponseEntity<Void> paySelected(@PathVariable final Long id, @RequestBody final List<String> cpfs) {
-		try {
-			companyService.paySelectedEmployees(id, cpfs);
-		} catch (Exception e) {
-			throw new DataIntegrityViolationException(e.getMessage());
-		}
-		return ResponseEntity.noContent().build();
-	}
 }

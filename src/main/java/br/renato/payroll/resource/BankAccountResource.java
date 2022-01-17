@@ -53,7 +53,7 @@ public class BankAccountResource {
 	}
 
 	@ApiOperation(value = "Allows you to check a employee bank account's balance. ", response = BankAccountDTO.class)
-	@GetMapping("/company/checkBalance/{employeeId}")
+	@GetMapping("/employee/checkBalance/{employeeId}")
 	public ResponseEntity<BankAccountDTO> checkEmployeeAccountBalance(@PathVariable final Long employeeId) {
 		BankAccountDTO bankAccountDTO = bankAccountService.getEmployeeAccountBalance(employeeId);
 

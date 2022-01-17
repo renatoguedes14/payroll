@@ -20,12 +20,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
 
+	private static final String[] AUTH_WHITELIST = {
+			"/v2/api-docs",
+			"/swagger-resources",
+			"/swagger-resources/**",
+			"/configuration/ui",
+			"/configuration/security",
+			"/swagger-ui.html",
+			"/webjars/**",
+			"/v3/api-docs/**",
+			"/swagger-ui/**",
+			"/auth/users/create",
+			"/login"
+	};
+
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable().authorizeRequests()
-				.antMatchers(HttpMethod.POST, "/auth/users/create").permitAll()
-				.antMatchers(HttpMethod.POST, "/login").permitAll()
-				.antMatchers("/swagger-ui/index.html/").permitAll()
+				.antMatchers(AUTH_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.addFilterBefore(new JwtLoginFilter("/login", authenticationManager()),

@@ -31,13 +31,15 @@ public class Company {
 	private String name;
 	private String cnpj;
 	private String address;
+	private String email;
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
 	private List<Employee> employeeList;
 
-	public Company(final String name, final String cnpj, final String address) {
+	public Company(final String name, final String cnpj, final String address, final String email) {
 		this.name = name;
 		this.cnpj = cnpj;
 		this.address = address;
+		this.email = email;
 	}
 }

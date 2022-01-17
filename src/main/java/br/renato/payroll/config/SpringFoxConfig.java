@@ -17,7 +17,7 @@ public class SpringFoxConfig {
 	public Docket swagger() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select()
-				.apis(RequestHandlerSelectors.basePackage("br.renato.payroll.resources"))
+				.apis(RequestHandlerSelectors.basePackage("br.renato.payroll.resource"))
 				.paths(PathSelectors.any())
 				.build()
 				.apiInfo(apiInfo());

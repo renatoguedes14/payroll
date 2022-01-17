@@ -4,6 +4,8 @@ import br.renato.payroll.entity.Employee;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
@@ -11,10 +13,15 @@ import java.math.BigDecimal;
 public class EmployeeDTO {
 
 	private Long id;
+	@NotBlank(message = "Name mustn't be empty. ")
 	private String name;
+	@NotBlank(message = "CPF mustn't be empty. ")
 	private String cpf;
+	@NotBlank(message = "Address mustn't be empty. ")
 	private String address;
+	@NotNull(message = "Company id mustn't be null. ")
 	private Long companyId;
+	@NotNull(message = "Salary mustn't be null. ")
 	private BigDecimal salary;
 
 	public EmployeeDTO(final Employee employee) {

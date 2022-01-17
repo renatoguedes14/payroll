@@ -23,7 +23,7 @@ public class UserResource {
 
 	@ApiOperation(value = "Create user. ")
 	@PostMapping
-	public ResponseEntity<User> create(@RequestBody User user) {
+	public ResponseEntity<User> create(@RequestBody final User user) {
 		try {
 			return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
 		} catch (DataIntegrityViolationException e) {
